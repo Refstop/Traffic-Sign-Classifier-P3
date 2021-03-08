@@ -6,7 +6,7 @@
 - 계산된 모델로 새로운 사진 test하고 분류 결과와 정확도 검출
 
 ## 기본이 된 CNN 모델
-![lenet](image/lenet.png)
+![lenet](image/lenet.png)  
 교통신호 분류기를 작성하는데 사용한 CNN은 LeNet-5 입니다. 기존의 LeNet-5의 구조는 그림과 같이 Convolution-Pooling layer 한 쌍과 3개의 Fully Connected Layer로 구성되어 있습니다.
 
 | Layer         		|     Description	        					|
