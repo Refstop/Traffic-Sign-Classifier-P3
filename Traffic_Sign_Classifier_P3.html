@@ -14521,8 +14521,8 @@ Number of classes = 43
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1">### Preprocess the data here. It is required to normalize the data. Other preprocessing steps could include </span>
 <span class="c1">### converting to grayscale, etc.</span>
 <span class="c1">### Feel free to use as many code cells as needed.</span>
-<span class="c1"># 데이터들의 형식은 (Set 갯수, 너비, 높이, channel)</span>
-<span class="c1"># 28*28 사이즈의 이미지에 너비, 높이 2pixel씩 pad함.</span>
+<span class="c1"># The format of the data is (Set count, width, height, channel)</span>
+<span class="c1"># Pad the 28*28 size image by 2 pixels in width and height.</span>
 <span class="n">X_train</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="s1">&#39;constant&#39;</span><span class="p">)</span>
 <span class="n">X_valid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">X_valid</span><span class="p">,</span> <span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="s1">&#39;constant&#39;</span><span class="p">)</span>
 <span class="n">X_test</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="s1">&#39;constant&#39;</span><span class="p">)</span>
@@ -14543,18 +14543,16 @@ Number of classes = 43
 </div>
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>정확도를 올리기 위해서 사용해 본 방법은 다음과 같습니다.</p>
+<p>Here's how you've tried to improve accuracy:</p>
 <ol>
-<li>Hyperparameter 수정</li>
-<li>1*1 convolution layer 추가</li>
-<li>fully connected layer 추가</li>
-<li>dropout 추가</li>
-<li>이미지 정규화 범위 수정</li>
-<li>가중치 초기화 다른 방법 사용</li>
+<li>Modify Hyperparameter</li>
+<li>Add 1*1 convolution layer</li>
+<li>Add fully connected layer</li>
+<li>Add dropout</li>
+<li>Modify image normalization range</li>
+<li>Initialize weight using another method</li>
 </ol>
-<p>이 중 결론적으로 사용한 방법은 1, 2, 3번 입니다.
-EPOCHS를 10~200까지 증가시켜 보면서 가장 유효 검증 정확도가 높게 나온 EPOCHS = 50을 채택했습니다.
-그리고 계산량을 줄이고 비선형성을 추가하는 1*1 convolution layer를 추가하였고, fully connected layer를 더 깊게 하여 비선형성을 추가했습니다.</p>
+<p>In conclusion, the methods used are 1, 2, and 3. The EPOCHS = 50 has the highest validation accuracy, with EPOCHS increasing from 10 to 200. Then we added a 1*1 convolution layer that reduces the amount of computation and adds nonlinearity, and we added nonlinearity by deepening the full connected layer.</p>
 
 </div>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
@@ -14565,13 +14563,13 @@ EPOCHS를 10~200까지 증가시켜 보면서 가장 유효 검증 정확도가 
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1">### Define your architecture here.</span>
 <span class="c1">### Feel free to use as many code cells as needed.</span>
-<span class="c1"># 학습 파트</span>
+<span class="c1"># training part</span>
 <span class="c1"># Hyperparameter</span>
 <span class="n">EPOCHS</span> <span class="o">=</span> <span class="mi">50</span>
 <span class="n">BATCH_SIZE</span> <span class="o">=</span> <span class="mi">128</span>
 <span class="n">keep_prob</span> <span class="o">=</span> <span class="mf">0.8</span>
 
-<span class="c1"># LeNet 함수</span>
+<span class="c1"># LeNet function</span>
 <span class="k">def</span> <span class="nf">LeNet</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="n">mu</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">sigma</span> <span class="o">=</span> <span class="mf">0.1</span>
@@ -14583,42 +14581,39 @@ EPOCHS를 10~200까지 증가시켜 보면서 가장 유효 검증 정확도가 
     <span class="n">fc2_out</span> <span class="o">=</span> <span class="mi">128</span>
     <span class="n">fc3_out</span> <span class="o">=</span> <span class="mi">84</span>
  
-    <span class="c1"># ConvNet 1층</span>
-    <span class="c1"># 가중치(필터): 5*5, 입력 3겹(3채널), 출력 6겹</span>
+    <span class="c1"># ConvNet 1st layer</span>
+    <span class="c1"># weight(filter): 5*5, Input 3 channel, output 6 layers</span>
     <span class="n">conv1_W</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">truncated_normal</span><span class="p">(</span><span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">conv1_out</span><span class="p">),</span> <span class="n">mean</span> <span class="o">=</span> <span class="n">mu</span><span class="p">,</span> <span class="n">stddev</span> <span class="o">=</span> <span class="n">sigma</span><span class="p">),</span> <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;w1&quot;</span><span class="p">)</span>
     <span class="n">conv1_b</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">conv1_out</span><span class="p">))</span>
     <span class="n">conv1</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">conv2d</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">conv1_W</span><span class="p">,</span> <span class="n">strides</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">padding</span> <span class="o">=</span> <span class="s1">&#39;VALID&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="n">conv1_b</span>
  
     <span class="c1"># convolution padding</span>
-    <span class="c1"># same: new_width = in_width / stride_width</span>
-    <span class="c1"># vaild: new_width = (in_width - filter_width+1) / strid_width</span>
     <span class="n">conv1</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="n">conv1</span><span class="p">)</span>
-    <span class="c1"># max pooling 1층 - depth 변화 없음</span>
+    <span class="c1"># max pooling - No depth change</span>
     <span class="n">conv1</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">max_pool</span><span class="p">(</span><span class="n">conv1</span><span class="p">,</span> <span class="n">ksize</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">strides</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;VALID&#39;</span><span class="p">)</span>
     <span class="c1"># pooling padding</span>
     <span class="c1"># new_width = (input_width - filter_width) / stride_width + 1</span>
     
-    <span class="c1"># ConvNet 2층 - 1*1 convolution</span>
-    <span class="c1"># 가중치(필터) 5*5, 입력 6겹, 출력 16겹</span>
+    <span class="c1"># ConvNet 2nd layer - 1*1 convolution</span>
+    <span class="c1"># weight(filter): 5*5, Input 6 channel, output 16 layers</span>
     <span class="n">conv2_W</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">truncated_normal</span><span class="p">(</span><span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">conv1_out</span><span class="p">,</span> <span class="n">conv2_out</span><span class="p">),</span> <span class="n">mean</span> <span class="o">=</span> <span class="n">mu</span><span class="p">,</span> <span class="n">stddev</span> <span class="o">=</span> <span class="n">sigma</span><span class="p">))</span>
     <span class="n">conv2_b</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">conv2_out</span><span class="p">))</span>
     <span class="n">conv2</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">conv2d</span><span class="p">(</span><span class="n">conv1</span><span class="p">,</span> <span class="n">conv2_W</span><span class="p">,</span> <span class="n">strides</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">padding</span> <span class="o">=</span> <span class="s1">&#39;VALID&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="n">conv2_b</span>
  
     <span class="n">conv2</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="n">conv2</span><span class="p">)</span>
-    <span class="c1"># max pooling 2층 - depth 변화 없음</span>
-    <span class="c1"># conv2 = tf.nn.max_pool(conv2, ksize = [1, 2, 2, 1], strides = [1, 2, 2, 1], padding=&#39;VALID&#39;)</span>
+    <span class="c1"># max pooling - No depth change</span>
 
-    <span class="c1"># ConvNet 3층 </span>
-    <span class="c1"># 가중치(필터) 5*5, 입력 16겹, 출력 48겹</span>
+    <span class="c1"># ConvNet 3rd layer</span>
+    <span class="c1"># weight(filter): 5*5, Input 16 channel, output 48 layers</span>
     <span class="n">conv3_W</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">truncated_normal</span><span class="p">(</span><span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">conv2_out</span><span class="p">,</span> <span class="n">conv3_out</span><span class="p">),</span> <span class="n">mean</span> <span class="o">=</span> <span class="n">mu</span><span class="p">,</span> <span class="n">stddev</span> <span class="o">=</span> <span class="n">sigma</span><span class="p">))</span>
     <span class="n">conv3_b</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">conv3_out</span><span class="p">))</span>
     <span class="n">conv3</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">conv2d</span><span class="p">(</span><span class="n">conv2</span><span class="p">,</span> <span class="n">conv3_W</span><span class="p">,</span> <span class="n">strides</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">padding</span> <span class="o">=</span> <span class="s1">&#39;VALID&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="n">conv3_b</span>
  
     <span class="n">conv3</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="n">conv3</span><span class="p">)</span>
-    <span class="c1"># max pooling 2층 - depth 변화 없음</span>
+    <span class="c1"># max pooling - No depth change</span>
     <span class="n">conv3</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">max_pool</span><span class="p">(</span><span class="n">conv3</span><span class="p">,</span> <span class="n">ksize</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">strides</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;VALID&#39;</span><span class="p">)</span>
 
-    <span class="c1"># conv3 출력값 shape(128, 6*6*48 = 1748)으로 평평하게(flatten하게) 만듦</span>
+    <span class="c1"># Make conv3 output flat (flatten) with shape (128, 6*6*48 = 1748)</span>
     <span class="n">fc0</span> <span class="o">=</span> <span class="n">flatten</span><span class="p">(</span><span class="n">conv3</span><span class="p">)</span>
 
     <span class="c1"># Full Connnected Layers</span>
@@ -14662,22 +14657,21 @@ EPOCHS를 10~200까지 증가시켜 보면서 가장 유효 검증 정확도가 
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mi">36</span><span class="p">,</span> <span class="mi">36</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
-<span class="c1"># 수정: one_hot 함수의 파라미터 자료형이 int형 종류만 받아서 int32로 수정</span>
 <span class="n">y</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="p">(</span><span class="kc">None</span><span class="p">))</span>
 
-<span class="c1"># LeNet 알고리즘의 결과물과 one_hot_y로 가중치를 수정하는 과정.</span>
-<span class="c1"># Tensorflow 2에서는 아래 과정을 session 대신 함수로 만들어 사용.</span>
+<span class="c1"># The process of modifying the weights with the result of the LeNet algorithm and one_hot_y.</span>
+<span class="c1"># Tensorflow 2 uses the following courses as a function instead of sessions.</span>
 <span class="n">one_hot_y</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">one_hot</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">n_classes</span><span class="p">)</span>
  
 <span class="n">rate</span> <span class="o">=</span> <span class="mf">0.001</span>
 <span class="n">logits</span> <span class="o">=</span> <span class="n">LeNet</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-<span class="c1"># 수정: 파라미터 이름 각각 지정해 줌</span>
+
 <span class="n">cross_entropy</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">softmax_cross_entropy_with_logits_v2</span><span class="p">(</span><span class="n">logits</span> <span class="o">=</span> <span class="n">logits</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">one_hot_y</span><span class="p">)</span>
 <span class="n">loss_operation</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_mean</span><span class="p">(</span><span class="n">cross_entropy</span><span class="p">)</span>
 <span class="n">optimizer</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">AdamOptimizer</span><span class="p">(</span><span class="n">learning_rate</span> <span class="o">=</span> <span class="n">rate</span><span class="p">)</span>
 <span class="n">training_operation</span> <span class="o">=</span> <span class="n">optimizer</span><span class="o">.</span><span class="n">minimize</span><span class="p">(</span><span class="n">loss_operation</span><span class="p">)</span>
  
-<span class="c1"># 정확도 평가 과정 session에서 유효 검증 데이터를 입력하여 정확도를 평가</span>
+<span class="c1"># Evaluate accuracy by entering validation data in the accuracy assessment course session.</span>
 <span class="n">correct_prediction</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">equal</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">logits</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">tf</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">one_hot_y</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
 <span class="n">accuracy_operation</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_mean</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">correct_prediction</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span>
 
@@ -14730,7 +14724,7 @@ Please use `layer.__call__` method instead.
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[6]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># 세션 실행</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Run session</span>
 <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span> <span class="k">as</span> <span class="n">sess</span><span class="p">:</span>
     <span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">global_variables_initializer</span><span class="p">())</span>
     <span class="n">num_examples</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">X_train</span><span class="p">)</span>
@@ -14941,23 +14935,22 @@ Model saved
 </div>
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>여러번 실행해 본 결과 EPOCHS = 50일 때 가장 좋은 결과를 낼 수 있었습니다.</p>
-<p>EPOCHS = 50<br>
-BATCH_SIZE = 128<br>
-keep_prob = 0.8</p>
-<p>1번째 실행</p>
-<p>EPOCH 48 ...<br>
-Validation Accuracy = 0.9566893424036281</p>
-<p>EPOCH 49 ...<br>
-Validation Accuracy = 0.9564625850340136</p>
-<p>EPOCH 50 ...<br>
+<p>We've run it many times and we've got the best results when EPOCHS = 50.
+EPOCHS = 50<br>
+BATCH_SIZE = 128</p>
+<p>The 1st Run
+EPOCH 48 ...<br>
+Validation Accuracy = 0.9566893424036281
+EPOCH 49 ...<br>
+Validation Accuracy = 0.9564625850340136
+EPOCH 50 ...<br>
 Validation Accuracy = 0.9562358276643991</p>
-<p>2번째 실행</p>
-<p>EPOCH 48 ...<br>
-Validation Accuracy = 0.9578231290084164</p>
-<p>EPOCH 49 ...<br>
-Validation Accuracy = 0.9578231290084164</p>
-<p>EPOCH 50 ...<br>
+<p>The 2nd Run
+EPOCH 48 ...<br>
+Validation Accuracy = 0.9578231290084164
+EPOCH 49 ...<br>
+Validation Accuracy = 0.9578231290084164
+EPOCH 50 ...<br>
 Validation Accuracy = 0.9578231290084164</p>
 
 </div>
