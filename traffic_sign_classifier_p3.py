@@ -75,8 +75,8 @@ print(y_train[index])
 ### Preprocess the data here. It is required to normalize the data. Other preprocessing steps could include 
 ### converting to grayscale, etc.
 ### Feel free to use as many code cells as needed.
-# 데이터들의 형식은 (Set 갯수, 너비, 높이, channel)
-# 28*28 사이즈의 이미지에 너비, 높이 2pixel씩 pad함.
+# The format of the data is (Set count, width, height, channel)
+# Pad the 28*28 size image by 2 pixels in width and height.
 X_train = np.pad(X_train, ((0, 0), (2, 2), (2, 2), (0, 0)), 'constant')
 X_valid = np.pad(X_valid, ((0, 0), (2, 2), (2, 2), (0, 0)), 'constant')
 X_test = np.pad(X_test, ((0, 0), (2, 2), (2, 2), (0, 0)), 'constant')
@@ -88,28 +88,15 @@ X_train = normalize(X_train)
 X_test = normalize(X_test) 
 X_valid = normalize(X_valid)
 
-"""정확도를 올리기 위해서 사용해 본 방법은 다음과 같습니다.
-1. Hyperparameter 수정
-1. 1*1 convolution layer 추가
-1. fully connected layer 추가
-1. dropout 추가
-1. 이미지 정규화 범위 수정
-1. 가중치 초기화 다른 방법 사용
-
-이 중 결론적으로 사용한 방법은 1, 2, 3번 입니다.
-EPOCHS를 10~200까지 증가시켜 보면서 가장 유효 검증 정확도가 높게 나온 EPOCHS = 50을 채택했습니다.
-그리고 계산량을 줄이고 비선형성을 추가하는 1*1 convolution layer를 추가하였고, fully connected layer를 더 깊게 하여 비선형성을 추가했습니다.
-"""
-
 ### Define your architecture here.
 ### Feel free to use as many code cells as needed.
-# 학습 파트
+# training part
 # Hyperparameter
 EPOCHS = 50
 BATCH_SIZE = 128
 keep_prob = 0.8
 
-# LeNet 함수
+# LeNet function
 def LeNet(x):
     mu = 0
     sigma = 0.1
@@ -121,42 +108,37 @@ def LeNet(x):
     fc2_out = 128
     fc3_out = 84
  
-    # ConvNet 1층
-    # 가중치(필터): 5*5, 입력 3겹(3채널), 출력 6겹
+    # ConvNet 1st layer
+    # weight(filter): 5*5, Input 3 channel, output 6 layers
     conv1_W = tf.Variable(tf.truncated_normal(shape = (5, 5, 3, conv1_out), mean = mu, stddev = sigma), name = "w1")
     conv1_b = tf.Variable(tf.zeros(conv1_out))
     conv1 = tf.nn.conv2d(x, conv1_W, strides = [1, 1, 1, 1], padding = 'VALID') + conv1_b
  
     # convolution padding
-    # same: new_width = in_width / stride_width
-    # vaild: new_width = (in_width - filter_width+1) / strid_width
     conv1 = tf.nn.relu(conv1)
-    # max pooling 1층 - depth 변화 없음
+    # max pooling - No depth change
     conv1 = tf.nn.max_pool(conv1, ksize = [1, 2, 2, 1], strides = [1, 2, 2, 1], padding='VALID')
-    # pooling padding
-    # new_width = (input_width - filter_width) / stride_width + 1
     
-    # ConvNet 2층 - 1*1 convolution
-    # 가중치(필터) 5*5, 입력 6겹, 출력 16겹
+    # ConvNet 2nd layer - 1*1 convolution
+    # weight(filter): 5*5, Input 6 channel, output 16 layers
     conv2_W = tf.Variable(tf.truncated_normal(shape = (1, 1, conv1_out, conv2_out), mean = mu, stddev = sigma))
     conv2_b = tf.Variable(tf.zeros(conv2_out))
     conv2 = tf.nn.conv2d(conv1, conv2_W, strides = [1, 1, 1, 1], padding = 'VALID') + conv2_b
  
     conv2 = tf.nn.relu(conv2)
-    # max pooling 2층 - depth 변화 없음
-    # conv2 = tf.nn.max_pool(conv2, ksize = [1, 2, 2, 1], strides = [1, 2, 2, 1], padding='VALID')
+    # max pooling - No depth change
 
-    # ConvNet 3층 
-    # 가중치(필터) 5*5, 입력 16겹, 출력 48겹
+    # ConvNet 3rd layer
+    # weight(filter): 5*5, Input 16 channel, output 48 layers
     conv3_W = tf.Variable(tf.truncated_normal(shape = (5, 5, conv2_out, conv3_out), mean = mu, stddev = sigma))
     conv3_b = tf.Variable(tf.zeros(conv3_out))
     conv3 = tf.nn.conv2d(conv2, conv3_W, strides = [1, 1, 1, 1], padding = 'VALID') + conv3_b
  
     conv3 = tf.nn.relu(conv3)
-    # max pooling 2층 - depth 변화 없음
+    # max pooling - No depth change
     conv3 = tf.nn.max_pool(conv3, ksize = [1, 2, 2, 1], strides = [1, 2, 2, 1], padding='VALID')
 
-    # conv3 출력값 shape(128, 6*6*48 = 1748)으로 평평하게(flatten하게) 만듦
+    # Make conv3 output flat (flatten) with shape (128, 6*6*48 = 1748)
     fc0 = flatten(conv3)
 
     # Full Connnected Layers
@@ -188,22 +170,21 @@ def LeNet(x):
     return logits
 
 x = tf.placeholder(tf.float32, (None, 36, 36, 3))
-# 수정: one_hot 함수의 파라미터 자료형이 int형 종류만 받아서 int32로 수정
 y = tf.placeholder(tf.int32, (None))
 
-# LeNet 알고리즘의 결과물과 one_hot_y로 가중치를 수정하는 과정.
-# Tensorflow 2에서는 아래 과정을 session 대신 함수로 만들어 사용.
+# The process of modifying the weights with the result of the LeNet algorithm and one_hot_y.
+# Tensorflow 2 uses the following courses as a function instead of sessions.
 one_hot_y = tf.one_hot(y, n_classes)
  
 rate = 0.001
 logits = LeNet(x)
-# 수정: 파라미터 이름 각각 지정해 줌
+
 cross_entropy = tf.nn.softmax_cross_entropy_with_logits_v2(logits = logits, labels = one_hot_y)
 loss_operation = tf.reduce_mean(cross_entropy)
 optimizer = tf.train.AdamOptimizer(learning_rate = rate)
 training_operation = optimizer.minimize(loss_operation)
  
-# 정확도 평가 과정 session에서 유효 검증 데이터를 입력하여 정확도를 평가
+# Evaluate accuracy by entering validation data in the accuracy assessment course session.
 correct_prediction = tf.equal(tf.argmax(logits, 1), tf.argmax(one_hot_y, 1))
 accuracy_operation = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
@@ -218,7 +199,7 @@ def evaluate(X_data, y_data):
         total_accuracy += (accuracy * len(batch_x))
     return total_accuracy / num_examples
 
-# 세션 실행
+# Run session
 with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
     num_examples = len(X_train)
@@ -245,35 +226,6 @@ with tf.Session() as sess:
     test_accuracy = evaluate(X_test, y_test)
     print("Test Accuracy = {}".format(test_accuracy))
     print("Model saved")
-
-"""여러번 실행해 본 결과 EPOCHS = 50일 때 가장 좋은 결과를 낼 수 있었습니다.
-
-EPOCHS = 50  
-BATCH_SIZE = 128  
-keep_prob = 0.8  
-
-1번째 실행
-
-EPOCH 48 ...  
-Validation Accuracy = 0.9566893424036281
-
-EPOCH 49 ...  
-Validation Accuracy = 0.9564625850340136
-
-EPOCH 50 ...  
-Validation Accuracy = 0.9562358276643991
-
-2번째 실행
-
-EPOCH 48 ...  
-Validation Accuracy = 0.9578231290084164
-
-EPOCH 49 ...  
-Validation Accuracy = 0.9578231290084164
-
-EPOCH 50 ...  
-Validation Accuracy = 0.9578231290084164
-"""
 
 with tf.Session() as sess:
     saver.restore(sess, tf.train.latest_checkpoint('.')) 
