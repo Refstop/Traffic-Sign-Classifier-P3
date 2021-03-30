@@ -1,13 +1,12 @@
 # Traffic-Sign-Classifier-P3
-본 프로젝트는 Udacity Self-driving car nanodegree의 세 번째 프로젝트 교통 신호 분류기입니다.
-프로젝트 목적은 다음과 같습니다.
-- Train data, Validation data, Test data를 받아 학습, 유효 검증, 최종 테스트 정확도 보기
-- CNN을 수정하여 93% 이상의 유효 검증 정확도 도출하기
-- 계산된 모델로 새로운 사진 test하고 분류 결과와 정확도 검출
+This project is the third project traffic signal classifier for the Udacity Self-driving car nanodegreys. The purpose of the project is as follows:
+- Receive train data, validation data, and test data to learn, validate, and view final test accuracy
+- To obtain more than 93% validation accuracy by modifying the CNN
+- Test new photos with calculated models and detect classification results and accuracy
 
-## 기본이 된 CNN 모델
+## Which CNN Model based on
 ![lenet](image/lenet.png)  
-교통신호 분류기를 작성하는데 사용한 CNN은 LeNet-5 입니다. 기존의 LeNet-5의 구조는 그림과 같이 Convolution-Pooling layer 한 쌍과 3개의 Fully Connected Layer로 구성되어 있습니다.
+The CNN used to create a traffic signal classifier is LeNet-5. The existing LeNet-5 structure consists of a pair of Convolution-Pooling layers and three Full Connected Layers as shown.
 
 | Layer         		|     Description	        					|
 |:---------------------:|:---------------------------------------------:|
@@ -25,7 +24,7 @@
 | RELU					|												|
 | Fully connected		| input = 84, output = 10       	            |
 
-하지만 이 모델을 그대로 사용했을 때, 유효 검증 정확도가 약 89% 정도 도출되었기에, 조금 수정해 주었습니다.
+However, when we used this model as it was, the validation accuracy was approximately 89%, so we revised it a little bit.
 
 | Layer         		|     Description	        					|
 |:---------------------:|:---------------------------------------------:|
@@ -47,28 +46,28 @@
 | RELU					|												|
 | Fully connected		| input = 84, output = 43       	            |
 
-정확도를 올리기 위해서 사용해 본 방법은 다음과 같습니다.
-1. Hyperparameter 수정
-1. 1*1 convolution layer 추가
-1. fully connected layer 추가
-1. dropout 추가
-1. 이미지 정규화 범위 수정
-1. 가중치 초기화 다른 방법 사용
+Here's how you've tried to improve accuracy:
+1. Modify Hyperparameter
+1. Add 1*1 convolution layer
+1. Add fully connected layer
+1. Add dropout
+1. Modify image normalization range
+1. Initialize weight using another method
 
-이 중 결론적으로 사용한 방법은 1, 2, 3번 입니다. EPOCHS를 10~200까지 증가시켜 보면서 가장 유효 검증 정확도가 높게 나온 EPOCHS = 50을 채택했습니다. 그리고 계산량을 줄이고 비선형성을 추가하는 1*1 convolution layer를 추가하였고, fully connected layer를 더 깊게 하여 비선형성을 추가했습니다.
+In conclusion, the methods used are 1, 2, and 3. The EPOCHS = 50 has the highest validation accuracy, with EPOCHS increasing from 10 to 200. Then we added a 1*1 convolution layer that reduces the amount of computation and adds nonlinearity, and we added nonlinearity by deepening the full connected layer.
 ```
-여러번 실행해 본 결과 EPOCHS = 50일 때 가장 좋은 결과를 낼 수 있었습니다.
+We've run it many times and we've got the best results when EPOCHS = 50.
 EPOCHS = 50  
 BATCH_SIZE = 128  
 
-1번째 실행
+The 1st Run
 EPOCH 48 ...  
 Validation Accuracy = 0.9566893424036281
 EPOCH 49 ...  
 Validation Accuracy = 0.9564625850340136
 EPOCH 50 ...  
 Validation Accuracy = 0.9562358276643991
-2번째 실행
+The 2nd Run
 EPOCH 48 ...  
 Validation Accuracy = 0.9578231290084164
 EPOCH 49 ...  
@@ -77,13 +76,13 @@ EPOCH 50 ...
 Validation Accuracy = 0.9578231290084164
 ```
 
-## Test 데이터 정확도 측정
+## Test Data Accuracy Measurement
 ```
 Test Accuracy = 94%
 ```
-Test 데이터의 정확도는 약 94%가 나왔습니다. 다음으로 새로운 데이터에 대한 정확도를 보겠습니다.
+The accuracy of the test data was approximately 94%. Next, let's look at the accuracy of the new data.
 
-## 새로운 데이터에 대한 정확도
+## Accuracy for new data
 ```
 INFO:tensorflow:Restoring parameters from ./traffic_classi
 Prediction: 17
@@ -95,4 +94,4 @@ Prediction: 13
 Prediction: 38
 Test Accuracy = 86%
 ```
-새로운 데이터에 대해서 약 86%의 정확도를 보여주고 있습니다. 7개 중 6개를 정답으로 예측하고 있습니다.
+It shows about 86 percent accuracy with the new data. Six out of seven are predicted to be correct.
